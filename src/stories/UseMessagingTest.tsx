@@ -34,7 +34,7 @@ export const UseMessagingTest = ({}: UseMessagingTestProps) => {
     <>
       <div>
         <h5>current connected:</h5>
-        <div>{connected.map(u => (<p key={u.name}>{u.name}</p>))}</div>
+        <div>{connected.map(u => (<p key={u.id}>{u.data?.name}</p>))}</div>
       </div>
       <div>
         <h5>message:</h5>
