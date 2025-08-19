@@ -19,8 +19,6 @@ export const getNonLocalStorage = (options: InstanceOptions, credentials?: Crede
 
   const instanceKey = buildKey(options, cred)
 
-  console.warn('get instance', instanceKey, Instances)
-
   if (Instances[instanceKey]) return Instances[instanceKey]
 
   const nls = new NonLocalStorage(cred, options)

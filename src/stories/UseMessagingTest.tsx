@@ -22,10 +22,12 @@ export const UseMessagingTest = ({}: UseMessagingTestProps) => {
 
   const [connected, send, join, leave] = useMessaging('useMessaging_test', (msg) => {
     setLastMsg(msg.myMsg)
-  }, {}, {
-    projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
-    apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
-    apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
+  }, {
+    credentials: {
+      projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
+      apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
+      apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
+    }
   })
 
   return (

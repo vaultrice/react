@@ -10,10 +10,11 @@ async function getItem (nls: any, key: string, set: Function) {
   return res
 }
 
-export const useNonLocalState = (id: string, key: string, options: InstanceOptions = {}, credentials?: Credentials) => {
+export const useNonLocalState = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials }) => {
   const [keyValue, setKeyValue] = useState<ItemType | undefined>()
 
-  const nls = getNonLocalStorage({ ...options, id }, credentials)
+  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
+  const bind = options?.bind ?? true
 
   // bind to get item changes
   useEffect(() => {
@@ -25,11 +26,11 @@ export const useNonLocalState = (id: string, key: string, options: InstanceOptio
       setKeyValue(item)
     }
 
-    nls.on('setItem', key, action)
+    if (bind) nls.on('setItem', key, action)
 
     // unbind
     return () => {
-      nls.off('setItem', key, action)
+      if (bind) nls.off('setItem', key, action)
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])

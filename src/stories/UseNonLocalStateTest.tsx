@@ -18,10 +18,12 @@ export interface UseNonLocalStateTestProps {
 export const UseNonLocalStateTest = ({}: UseNonLocalStateTestProps) => {
   const [inputValue, setInput] = useState()
 
-  const [value, setValue] = useNonLocalState('useNonLocalState_test', 'test_key', {}, {
-    projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
-    apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
-    apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
+  const [value, setValue] = useNonLocalState('useNonLocalState_test', 'test_key', {
+    credentials: {
+      projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
+      apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
+      apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
+    }
   })
 
   return (

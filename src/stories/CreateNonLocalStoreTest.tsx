@@ -2,10 +2,12 @@ import React, { useState } from 'react'
 import { createNonLocalStore } from '..'
 
 // the api
-const { fetch, post } = createNonLocalStore('createNonLocalStore_test', 'test_key_store', {}, {
-  projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
-  apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
-  apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
+const { fetch, post } = createNonLocalStore('createNonLocalStore_test', 'test_key_store', {
+  credentials: {
+    projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
+    apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
+    apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
+  }
 })
 
 export interface CreateNonLocalStoreTestProps {
