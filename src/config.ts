@@ -7,5 +7,5 @@ export const init = (credentials: Credentials) => {
 }
 
 export const getCredentials = () => {
-  return Cred;
+  return Cred
 }

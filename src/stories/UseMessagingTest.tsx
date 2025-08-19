@@ -28,13 +28,11 @@ export const UseMessagingTest = ({}: UseMessagingTestProps) => {
     apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
   })
 
-  console.warn(connected)
-
   return (
     <>
       <div>
         <h5>current connected:</h5>
-        <div>{connected.map(u => (<p key={u.id}>{u.data?.name}</p>))}</div>
+        <div>{connected.map(u => (<p key={u.connectionId}>{u.data?.name}</p>))}</div>
       </div>
       <div>
         <h5>message:</h5>

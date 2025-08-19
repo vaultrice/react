@@ -1,8 +1,7 @@
-import { useRef, useState, useEffect } from 'react'
-import { NonLocalStorage } from '@vaultrice/sdk'
+import { useState, useEffect } from 'react'
 import type { InstanceOptions, ItemType, ValueType } from '@vaultrice/sdk'
 
-import { getCredentials } from './config'
+import { getNonLocalStorage } from './nlsInstances'
 import type { Credentials } from './types'
 
 async function getItem (nls: any, key: string, set: Function) {
@@ -13,47 +12,40 @@ async function getItem (nls: any, key: string, set: Function) {
 
 export const useNonLocalState = (id: string, key: string, options: InstanceOptions = {}, credentials?: Credentials) => {
   const [keyValue, setKeyValue] = useState<ItemType | undefined>()
-  const nls = useRef(new NonLocalStorage(credentials || getCredentials(), { ...options, id }))
 
-  // some what a hack to not rerun useEffect if options are new but actually the same as previous
-  const optionsJsonString = JSON.stringify(options)
-
-  // update the nls instance when options change
-  useEffect(() => {
-    nls.current = new NonLocalStorage(credentials || getCredentials(), { ...options, id })
-
-    getItem(nls.current, key, setKeyValue)
-  }, [id, optionsJsonString])
+  const nls = getNonLocalStorage({ ...options, id }, credentials)
 
   // bind to get item changes
   useEffect(() => {
-    if (!nls.current) return
+    if (!nls) return
+
+    getItem(nls, key, setKeyValue)
 
     const action = (item: ItemType) => {
       setKeyValue(item)
     }
 
-    nls.current.on('setItem', key, action)
+    nls.on('setItem', key, action)
 
     // unbind
     return () => {
-      nls.current.off('setItem', key, action)
+      nls.off('setItem', key, action)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])
 
   // function to setItem
   const setItem = async (value: ValueType) => {
-    await nls.current.setItem(key, value)
-    if (keyValue) {
-      setKeyValue({
-        ...keyValue,
-        value,
-        expiresAt: keyValue.expiresAt ?? Date.now(), // fallback to current time or appropriate default
-        keyVersion: keyValue.keyVersion ?? 1,        // fallback to default version
-        createdAt: keyValue.createdAt ?? Date.now(), // fallback to current time
-        updatedAt: Date.now()                        // update timestamp
-      })
-    }
+    const meta = await nls.setItem(key, value)
+
+    setKeyValue({
+      ...keyValue,
+      value,
+      expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
+      keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
+      createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
+      updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
+    })
   }
 
   return [keyValue?.value, setItem]
