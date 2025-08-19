@@ -10,10 +10,10 @@ async function getItem (nls: any, key: string, set: Function) {
   return res
 }
 
-export const useNonLocalState = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials }) => {
+export const useNonLocalState = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
   const [keyValue, setKeyValue] = useState<ItemType | undefined>()
 
-  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
+  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials, options)
   const bind = options?.bind ?? true
 
   // bind to get item changes

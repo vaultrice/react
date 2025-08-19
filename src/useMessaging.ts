@@ -4,9 +4,9 @@ import type { InstanceOptions, JoinedConnections, JoinedConnection } from '@vaul
 import { getNonLocalStorage } from './nlsInstances'
 import type { Credentials } from './types'
 
-export const useMessaging = (id: string, onMessage: Function, options: { instanceOptions: InstanceOptions, credentials?: Credentials }) => {
+export const useMessaging = (id: string, onMessage: Function, options: { instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
   const [connected, setConnected] = useState<JoinedConnections>([])
-  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
+  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials, options)
 
   // bind to get item changes
   useEffect(() => {
