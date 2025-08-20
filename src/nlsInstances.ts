@@ -1,9 +1,8 @@
 import { NonLocalStorage } from '@vaultrice/sdk'
 
-import type { InstanceOptions } from '@vaultrice/sdk'
-import type { Credentials } from './types'
+import type { InstanceOptions, Credentials } from '@vaultrice/sdk'
 
-import { getCredentials, getDefaultOptions } from './config'
+import { getCredentials /*, getDefaultOptions */ } from './config'
 
 const Instances: any = {}
 
@@ -14,9 +13,9 @@ function buildKey (instanceOptions: InstanceOptions, credentials: Credentials) {
   return `${credentialsStr}-${optionsStr}`
 }
 
-export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials?: Credentials, options?: any) => {
+export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials?: Credentials/*, options?: any */) => {
   const cred = credentials || getCredentials()
-  const opts = { ...getDefaultOptions(), ...options }
+  // const opts = { ...getDefaultOptions(), ...options }
 
   const instanceKey = buildKey(instanceOptions, cred)
 
@@ -24,13 +23,6 @@ export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials
 
   const nls = new NonLocalStorage(cred, instanceOptions)
   Instances[instanceKey] = nls
-
-  if (opts?.fetchAccessToken) {
-    nls.onAccessTokenExpiring(async () => {
-      const token = await opts.fetchAccessToken()
-      nls.useAccessToken(token)
-    })
-  }
 
   return nls
 }

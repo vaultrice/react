@@ -1,4 +1,4 @@
-import type { Credentials } from './types'
+import type { Credentials } from '@vaultrice/sdk'
 
 let Cred: Credentials
 let Opts: any

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import type { InstanceOptions, ItemType, ValueType } from '@vaultrice/sdk'
+import type { InstanceOptions, ItemType, ValueType, Credentials } from '@vaultrice/sdk'
 
 import { getNonLocalStorage } from './nlsInstances'
-import type { Credentials } from './types'
 
 async function getItem (nls: any, key: string, set: Function) {
   const res = await nls.getItem(key)
@@ -13,7 +12,7 @@ async function getItem (nls: any, key: string, set: Function) {
 export const useNonLocalState = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
   const [keyValue, setKeyValue] = useState<ItemType | undefined>()
 
-  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials, options)
+  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
   const bind = options?.bind ?? true
 
   // bind to get item changes
