@@ -1,5 +1,6 @@
 export * as vaultrice from './config'
 export { useNonLocalState } from './useNonLocalState'
+export { useNonLocalCounter } from './useNonLocalCounter'
 export { useMessaging } from './useMessaging'
 export { createNonLocalStore } from './createNonLocalStore'
 export { getNonLocalStorage, prepareOfflineNonLocalStorage } from './nlsInstances'
