@@ -1,4 +1,4 @@
-import { NonLocalStorage } from '@vaultrice/sdk'
+import { NonLocalStorage, createOfflineNonLocalStorage } from '@vaultrice/sdk'
 
 import type { InstanceOptions, Credentials } from '@vaultrice/sdk'
 
@@ -25,4 +25,17 @@ export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials
   Instances[instanceKey] = nls
 
   return nls
+}
+
+export const prepareOfflineNonLocalStorage = async (instanceOptions: InstanceOptions, credentials?: Credentials) => {
+  const cred = credentials || getCredentials()
+
+  const instanceKey = buildKey(instanceOptions, cred)
+
+  if (Instances[instanceKey]) return Instances[instanceKey]
+
+  const onls = await createOfflineNonLocalStorage(cred, instanceOptions)
+  Instances[instanceKey] = onls
+
+  return onls
 }
