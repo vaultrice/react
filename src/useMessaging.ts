@@ -40,5 +40,17 @@ export const useMessaging = (id: string, onMessage: Function, options: { instanc
     }
   }, [])
 
-  return [connected, (msg) => { nls?.send(msg), onMessage(msg) }, (user: any) => { nls?.join(user) }, () => { nls?.leave }]
+  return [
+    connected,
+    (msg: any) => {
+      nls?.send(msg)
+      onMessage(msg)
+    },
+    (user: any) => {
+      nls?.join(user)
+    },
+    () => {
+      nls?.leave()
+    }
+  ]
 }
