@@ -66,5 +66,23 @@
   },
   "dependencies": {
     "@vaultrice/sdk": "0.9.16"
+  },
+  "keywords": [
+    "vaultrice",
+    "storage",
+    "encryption",
+    "real-time",
+    "key-value",
+    "persistent",
+    "websocket",
+    "react"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vaultrice/react.git"
+  },
+  "homepage": "https://www.vaultrice.com",
+  "bugs": {
+    "url": "https://github.com/vaultrice/react/issues"
   }
 }
