@@ -84,6 +84,9 @@ const [count, increment, decrement, error] = useNonLocalCounter('roomId', 'count
 
 ## Helpers
 
+
+### credentials
+
 You can initialize your credentials in a single place to be reused:
 
 ```tsx
@@ -95,7 +98,23 @@ vaultrice.init(credentials)
 // in your components
 import { useNonLocalState } from '@vaultrice/react'
 
-const [value, setValue] = useNonLocalState<string>('myRoom', 'myKey'}
+const [value, setValue] = useNonLocalState<string>('objectId', 'myKey'}
+
+```
+
+### offline-capable NonLocalStorage
+
+To take advantage of the [offline-capable NonLocalStorage](https://vaultrice.github.io/sdk/functions/createOfflineNonLocalStorage.html) you will have to prepare the instances before usage, like:
+```tsx
+// eg. in your index.ts
+import { prepareOfflineNonLocalStorage } from '@vaultrice/react'
+
+prepareOfflineNonLocalStorage('objectId', credentials)
+
+// in your components it will pick up the prepared offline variant
+import { useNonLocalState } from '@vaultrice/react'
+
+const [value, setValue] = useNonLocalState<string>('objectId', 'myKey'}
 
 ```
 
