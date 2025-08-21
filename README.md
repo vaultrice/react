@@ -63,7 +63,7 @@ const [value, setValue, error] = useNonLocalState<string>('myRoom', 'myKey', {
 - `useMultiNonLocalStates` – Manage multiple keys atomically.
 - `useNonLocalCounter` – Atomic increment/decrement for counters.
 - `useMessaging` – Real-time messaging and presence.
-- `createNonLocalStore` – Simple fetch/post API for a single key.
+- `createNonLocalStore` – Simple fetch/post API for a single key, eg. to be used with tanstack query / mutation.
 
 ---
 
