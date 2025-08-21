@@ -3,34 +3,42 @@ import type { InstanceOptions, Credentials } from '@vaultrice/sdk'
 import { useNonLocalStorage } from './useNonLocalStorage'
 
 export const useNonLocalCounter = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
-  const [nls, value, setValue] = useNonLocalStorage(id, key, options)
+  const [nls, value, setValue,, error, setError] = useNonLocalStorage(id, key, options)
 
   // function to increment/decrement
   const increment = async (val?: number, opts?: any) => {
-    const meta = await nls.incrementItem(key, val, opts)
+    try {
+      const meta = await nls.incrementItem(key, val, opts)
 
-    setValue({
-      ...value,
-      value: meta?.value,
-      expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
-      keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
-      createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
-      updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
-    })
+      setValue({
+        ...value,
+        value: meta?.value,
+        expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
+        keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
+        createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
+        updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
+      })
+    } catch (err) {
+      setError(err)
+    }
   }
 
   const decrement = async (val?: number, opts?: any) => {
-    const meta = await nls.decrementItem(key, val, opts)
+    try {
+      const meta = await nls.decrementItem(key, val, opts)
 
-    setValue({
-      ...value,
-      value: meta?.value,
-      expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
-      keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
-      createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
-      updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
-    })
+      setValue({
+        ...value,
+        value: meta?.value,
+        expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
+        keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
+        createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
+        updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
+      })
+    } catch (err) {
+      setError(err)
+    }
   }
 
-  return [value?.value, increment, decrement]
+  return [value?.value, increment, decrement, error]
 }

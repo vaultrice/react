@@ -5,6 +5,7 @@ import { getNonLocalStorage } from './nlsInstances'
 
 export const useMessaging = (id: string, onMessage: Function, options: { instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
   const [connected, setConnected] = useState<JoinedConnections>([])
+  const [error, setError] = useState<any>()
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
 
   // bind to get item changes
@@ -13,8 +14,12 @@ export const useMessaging = (id: string, onMessage: Function, options: { instanc
 
     // get initial connections
     const getConnections = async () => {
-      const con = await nls.current?.getJoinedConnections()
-      setConnected(con || [])
+      try {
+        const con = await nls.current?.getJoinedConnections()
+        setConnected(con || [])
+      } catch (err) {
+        setError(err)
+      }
     }
 
     getConnections()
@@ -43,14 +48,27 @@ export const useMessaging = (id: string, onMessage: Function, options: { instanc
   return [
     connected,
     (msg: any) => {
-      nls?.send(msg)
-      onMessage(msg)
+      try {
+        nls?.send(msg)
+        onMessage(msg)
+      } catch (err) {
+        setError(err)
+      }
     },
     (user: any) => {
-      nls?.join(user)
+      try {
+        nls?.join(user)
+      } catch (err) {
+        setError(err)
+      }
     },
     () => {
-      nls?.leave()
-    }
+      try {
+        nls?.leave()
+      } catch (err) {
+        setError(err)
+      }
+    },
+    error
   ]
 }

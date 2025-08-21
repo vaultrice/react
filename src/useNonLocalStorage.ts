@@ -19,6 +19,7 @@ async function getItem (nls: any, key: string | Array<string>, set: Function) {
 
 export const useNonLocalStorage = (id: string, key: string | Array<string>, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
   const [values, setValues] = useState<ItemsType | undefined>()
+  const [error, setError] = useState<any>()
 
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
   const bind = options?.bind ?? true
@@ -27,7 +28,11 @@ export const useNonLocalStorage = (id: string, key: string | Array<string>, opti
   useEffect(() => {
     if (!nls) return
 
-    getItem(nls, key, setValues)
+    try {
+      getItem(nls, key, setValues)
+    } catch (err) {
+      setError(err)
+    }
 
     const getHandler = (key: string) => {
       return function handler (item: ItemType) {
@@ -65,7 +70,13 @@ export const useNonLocalStorage = (id: string, key: string | Array<string>, opti
 
   if (typeof key === 'string') {
     const getValue = async () => {
-      return nls.getItem(key)[key]
+      let val
+      try {
+        val = nls.getItem(key)[key]
+      } catch (err) {
+        setError(err)
+      }
+      return val?.value
     }
 
     const setValue = (val: any) => {
@@ -75,11 +86,17 @@ export const useNonLocalStorage = (id: string, key: string | Array<string>, opti
       })
     }
 
-    return [nls, values ? values[key] : undefined, setValue, getValue]
+    return [nls, values ? values[key] : undefined, setValue, getValue, error, setError]
   }
 
   const getValues = async () => {
-    return nls.getItem(key)
+    let val
+    try {
+      val = nls.getItem(key)
+    } catch (err) {
+      setError(err)
+    }
+    return val
   }
 
   return [nls, values, setValues, getValues]
