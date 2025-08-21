@@ -30,7 +30,7 @@ export const useMessaging = (
   const [error, setError] = useState<any>()
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
 
-  // bind to get item changes
+  // load initial connections
   useEffect(() => {
     if (!nls) return
 
@@ -45,7 +45,11 @@ export const useMessaging = (
     }
 
     getConnections()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
+  // bind to get item changes
+  useEffect(() => {
     // bind events
     const joinAction = (joined: JoinedConnection) => {
       if (!connected.find(c => c.connectionId === joined.connectionId)) setConnected([joined].concat(connected ?? []))
