@@ -3,7 +3,6 @@ import type { JoinedConnections, JoinedConnection, LeavedConnection, JSONObj } f
 
 import { getNonLocalStorage } from './nlsInstances'
 import type { UseGeneralOptions } from './types'
-
 // eslint-disable-next-line no-unused-vars
 export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, options: UseGeneralOptions) => {
   const [connected, setConnected] = useState<JoinedConnections>([])
@@ -28,7 +27,7 @@ export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, opti
 
     // bind events
     const joinAction = (joined: JoinedConnection) => {
-      setConnected([joined].concat(connected ?? []))
+      if (!connected.find(c => c.connectionId === joined.connectionId)) setConnected([joined].concat(connected ?? []))
     }
 
     const leaveAction = (left: LeavedConnection) => {
@@ -45,7 +44,8 @@ export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, opti
       nls.off('presence:join', joinAction)
       nls.off('presence:leave', leaveAction)
     }
-  }, [])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [connected])
 
   return [
     connected,
