@@ -81,4 +81,21 @@ const [count, increment, decrement, error] = useNonLocalCounter('roomId', 'count
 
 ---
 
+## Helpers
+
+You can initialize your credentials in a single place to be reused:
+
+```tsx
+// eg. in your index.ts
+import { vaultrice } from '@vaultrice/react'
+
+vaultrice.init(credentials)
+
+// in your components
+import { useNonLocalState } from '@vaultrice/react'
+
+const [value, setValue] = useNonLocalState<string>('myRoom', 'myKey'}
+
+```
+
 **Try Vaultrice for [free](https://www.vaultrice.app/register)**
