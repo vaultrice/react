@@ -49,7 +49,8 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
     }
 
     // we need to keep the handler functions to unbind
-    const handlers: { [key: string]: Function } = {}
+    // eslint-disable-next-line no-unused-vars
+    const handlers: { [key: string]: (item: ItemType & { prop: string }) => void } = {}
 
     if (bind) {
       const keys = Array.isArray(key) ? key : [key]

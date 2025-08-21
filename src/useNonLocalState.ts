@@ -4,7 +4,7 @@ import { useNonLocalStorage } from './useNonLocalStorage'
 import type { UseNonLocalStorageOptions } from './types'
 
 export function useNonLocalState<VT extends ValueType> (id: string, key: string, options: UseNonLocalStorageOptions) {
-  const [nls, value, setValue, error, setError] = useNonLocalStorage<VT>(id, key, options)
+  const [nls, value, setValue,, error, setError] = useNonLocalStorage<VT>(id, key, options)
 
   // function to setItem
   const setItem = async (val: ValueType, opts?: any) => {

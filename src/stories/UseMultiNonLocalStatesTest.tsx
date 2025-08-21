@@ -15,8 +15,9 @@ export interface UseMultiNonLocalStatesTestProps {
 }
 
 /** Primary UI component for user interaction */
+// eslint-disable-next-line no-empty-pattern
 export const UseMultiNonLocalStatesTest = ({}: UseMultiNonLocalStatesTestProps) => {
-  const [inputValue, setInput] = useState()
+  const [inputValue, setInput] = useState('')
 
   const [values, setValues] = useMultiNonLocalStates('useMultiNonLocalState_test', ['test_key1', 'test_key2', 'test_key3'], {
     credentials: {

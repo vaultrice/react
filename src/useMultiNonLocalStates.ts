@@ -4,7 +4,7 @@ import { useNonLocalStorage } from './useNonLocalStorage'
 import type { UseNonLocalStorageOptions } from './types'
 
 export const useMultiNonLocalStates = (id: string, keys: Array<string>, options: UseNonLocalStorageOptions) => {
-  const [nls, values, setValues, error, setError] = useNonLocalStorage(id, keys, options)
+  const [nls, values, setValues,, error, setError] = useNonLocalStorage(id, keys, options)
 
   // function to setItem
   const setItems = async (items: Record<string, { value: ValueType, ttl?: number, ifAbsent?: boolean }>) => {

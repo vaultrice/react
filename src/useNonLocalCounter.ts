@@ -2,7 +2,7 @@ import { useNonLocalStorage } from './useNonLocalStorage'
 import type { UseNonLocalStorageOptions } from './types'
 
 export const useNonLocalCounter = (id: string, key: string, options: UseNonLocalStorageOptions) => {
-  const [nls, value, setValue, error, setError] = useNonLocalStorage(id, key, options)
+  const [nls, value, setValue,, error, setError] = useNonLocalStorage(id, key, options)
 
   // function to increment/decrement
   const increment = async (val?: number, opts?: any) => {

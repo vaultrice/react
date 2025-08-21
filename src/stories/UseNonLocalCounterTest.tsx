@@ -1,4 +1,3 @@
-import React, { useState } from 'react'
 import { useNonLocalCounter } from '..'
 
 export interface UseNonLocalCounterTestProps {
@@ -15,6 +14,7 @@ export interface UseNonLocalCounterTestProps {
 }
 
 /** Primary UI component for user interaction */
+// eslint-disable-next-line no-empty-pattern
 export const UseNonLocalCounterTest = ({}: UseNonLocalCounterTestProps) => {
   const [value, increment, decrement] = useNonLocalCounter('useNonLocalCounter_test', 'test_key', {
     credentials: {

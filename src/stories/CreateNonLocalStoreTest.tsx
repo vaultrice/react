@@ -24,9 +24,10 @@ export interface CreateNonLocalStoreTestProps {
 }
 
 /** Primary UI component for user interaction */
+// eslint-disable-next-line no-empty-pattern
 export const CreateNonLocalStoreTest = ({}: CreateNonLocalStoreTestProps) => {
-  const [inputValue, setInput] = useState()
-  const [storeValue, setStore] = useState()
+  const [inputValue, setInput] = useState('')
+  const [storeValue, setStore] = useState('')
 
   return (
     <>
@@ -38,7 +39,7 @@ export const CreateNonLocalStoreTest = ({}: CreateNonLocalStoreTestProps) => {
           className='storybook-button'
           onClick={async () => {
             const v = await fetch()
-            setStore(v?.value)
+            setStore(v?.value as string)
           }}
         >
           get

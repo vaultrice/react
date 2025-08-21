@@ -1,11 +1,12 @@
 import React from 'react'
 import type { InstanceOptions, Credentials, ItemsType, ItemType, NonLocalStorage } from '@vaultrice/sdk'
 
-export type UseNonLocalStorageOptions = {
-  bind?: boolean,
+export type UseGeneralOptions = {
   instanceOptions?: InstanceOptions,
   credentials?: Credentials
 }
+
+export type UseNonLocalStorageOptions = { bind?: boolean } & UseGeneralOptions
 
 // For single key (string)
 export type UseNonLocalStorageStringReturn = [

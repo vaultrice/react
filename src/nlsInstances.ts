@@ -13,7 +13,7 @@ function buildKey (instanceOptions: InstanceOptions, credentials: Credentials) {
   return `${credentialsStr}-${optionsStr}`
 }
 
-export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials?: Credentials/*, options?: any */) => {
+export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials?: Credentials/*, options?: any */): NonLocalStorage => {
   const cred = credentials || getCredentials()
   // const opts = { ...getDefaultOptions(), ...options }
 
@@ -21,13 +21,13 @@ export const getNonLocalStorage = (instanceOptions: InstanceOptions, credentials
 
   if (Instances[instanceKey]) return Instances[instanceKey]
 
-  const nls = new NonLocalStorage(cred, instanceOptions)
+  const nls = new NonLocalStorage(cred, instanceOptions) // TODO: this can throw
   Instances[instanceKey] = nls
 
   return nls
 }
 
-export const prepareOfflineNonLocalStorage = async (instanceOptions: OfflineSyncOptions, credentials?: Credentials) => {
+export const prepareOfflineNonLocalStorage = async (instanceOptions: OfflineSyncOptions, credentials?: Credentials): Promise<NonLocalStorage> => {
   const cred = credentials || getCredentials()
 
   const instanceKey = buildKey(instanceOptions, cred)

@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
-import type { InstanceOptions, JoinedConnections, JoinedConnection, Credentials } from '@vaultrice/sdk'
+import type { JoinedConnections, JoinedConnection, LeavedConnection, JSONObj } from '@vaultrice/sdk'
 
 import { getNonLocalStorage } from './nlsInstances'
+import type { UseGeneralOptions } from './types'
 
-export const useMessaging = (id: string, onMessage: Function, options: { instanceOptions: InstanceOptions, credentials?: Credentials }) => {
+// eslint-disable-next-line no-unused-vars
+export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, options: UseGeneralOptions) => {
   const [connected, setConnected] = useState<JoinedConnections>([])
   const [error, setError] = useState<any>()
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
@@ -15,7 +17,7 @@ export const useMessaging = (id: string, onMessage: Function, options: { instanc
     // get initial connections
     const getConnections = async () => {
       try {
-        const con = await nls.current?.getJoinedConnections()
+        const con = await nls.getJoinedConnections()
         setConnected(con || [])
       } catch (err) {
         setError(err)
@@ -29,7 +31,7 @@ export const useMessaging = (id: string, onMessage: Function, options: { instanc
       setConnected([joined].concat(connected ?? []))
     }
 
-    const leaveAction = (left: JoinedConnection) => {
+    const leaveAction = (left: LeavedConnection) => {
       setConnected((connected ?? []).filter(c => c.connectionId !== left.connectionId))
     }
 

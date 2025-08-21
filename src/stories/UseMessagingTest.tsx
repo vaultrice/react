@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useMessaging } from '..'
+import { JoinedConnection } from '@vaultrice/sdk'
 
 export interface UseMessagingTestProps {
   // /** Is this the principal call tTo action on the page? */
@@ -15,13 +16,14 @@ export interface UseMessagingTestProps {
 }
 
 /** Primary UI component for user interaction */
+// eslint-disable-next-line no-empty-pattern
 export const UseMessagingTest = ({}: UseMessagingTestProps) => {
-  const [inputValue, setInput] = useState()
-  const [msgValue, setMsg] = useState()
-  const [lastMsgValue, setLastMsg] = useState()
+  const [inputValue, setInput] = useState('')
+  const [msgValue, setMsg] = useState('')
+  const [lastMsgValue, setLastMsg] = useState('')
 
   const [connected, send, join, leave] = useMessaging('useMessaging_test', (msg) => {
-    setLastMsg(msg.myMsg)
+    setLastMsg(msg.myMsg as string)
   }, {
     credentials: {
       projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
@@ -34,7 +36,7 @@ export const UseMessagingTest = ({}: UseMessagingTestProps) => {
     <>
       <div>
         <h5>current connected:</h5>
-        <div>{connected.map(u => (<p key={u.connectionId}>{u.data?.name}</p>))}</div>
+        <div>{connected.map((u: JoinedConnection) => (<p key={u.connectionId}>{u.data?.name as string}</p>))}</div>
       </div>
       <div>
         <h5>message:</h5>
