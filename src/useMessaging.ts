@@ -3,8 +3,29 @@ import type { JoinedConnections, JoinedConnection, LeavedConnection, JSONObj } f
 
 import { getNonLocalStorage } from './nlsInstances'
 import type { UseGeneralOptions } from './types'
-// eslint-disable-next-line no-unused-vars
-export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, options: UseGeneralOptions) => {
+
+/**
+ * React hook for managing real-time messaging and presence using NonLocalStorage.
+ *
+ * Handles connection state, message sending, joining/leaving presence, and error reporting.
+ * Automatically subscribes to presence and message events, and updates the connected users list.
+ *
+ * @param id - The unique identifier for the NonLocalStorage instance.
+ * @param onMessage - Callback invoked when a message is received.
+ * @param options - General options including credentials and instance options.
+ * @returns A tuple containing:
+ * - connected: Array of currently connected users.
+ * - send: Function to send a message.
+ * - join: Function to join presence with a user object.
+ * - leave: Function to leave presence.
+ * - error: Any error encountered during messaging or presence operations.
+ */
+export const useMessaging = (
+  id: string,
+  // eslint-disable-next-line no-unused-vars
+  onMessage: (msg: JSONObj) => void,
+  options: UseGeneralOptions
+) => {
   const [connected, setConnected] = useState<JoinedConnections>([])
   const [error, setError] = useState<any>()
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
@@ -49,6 +70,10 @@ export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, opti
 
   return [
     connected,
+    /**
+     * Sends a message to other connected clients.
+     * @param msg - The message object to send.
+     */
     (msg: any) => {
       try {
         nls?.send(msg)
@@ -57,6 +82,10 @@ export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, opti
         setError(err)
       }
     },
+    /**
+     * Joins presence with the given user object.
+     * @param user - The user object to join as.
+     */
     (user: any) => {
       try {
         nls?.join(user)
@@ -64,6 +93,9 @@ export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, opti
         setError(err)
       }
     },
+    /**
+     * Leaves presence for the current user.
+     */
     () => {
       try {
         nls?.leave()
@@ -71,6 +103,9 @@ export const useMessaging = (id: string, onMessage: (msg: JSONObj) => void, opti
         setError(err)
       }
     },
+    /**
+     * Error state for messaging and presence operations.
+     */
     error
   ]
 }

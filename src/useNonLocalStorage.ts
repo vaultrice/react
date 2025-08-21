@@ -4,7 +4,20 @@ import type { UseNonLocalStorageOptions, UseNonLocalStorageStringReturn, UseNonL
 
 import { getNonLocalStorage } from './nlsInstances'
 
-async function getItem<VT> (nls: NonLocalStorage, key: string | Array<string>, set: Function) {
+/**
+ * Retrieves one or more items from NonLocalStorage and updates state.
+ *
+ * @template VT - Value type
+ * @param nls - The NonLocalStorage instance.
+ * @param key - The key or array of keys to retrieve.
+ * @param set - State setter function to update values.
+ * @returns The retrieved item(s).
+ */
+async function getItem<VT> (
+  nls: NonLocalStorage,
+  key: string | Array<string>,
+  set: Function
+) {
   let res
 
   if (typeof key === 'string') {
@@ -18,6 +31,24 @@ async function getItem<VT> (nls: NonLocalStorage, key: string | Array<string>, s
   return res
 }
 
+/**
+ * React hook for accessing and updating values in NonLocalStorage.
+ *
+ * Handles both single key and multiple key scenarios, providing state, setters, async getters, and error handling.
+ *
+ * @template VT - Value type
+ * @template T - Key type (string or array of strings)
+ * @param id - The unique identifier for the NonLocalStorage instance.
+ * @param key - The key or array of keys to manage.
+ * @param options - Options for NonLocalStorage, including credentials and instance options.
+ * @returns A tuple containing:
+ * - NonLocalStorage instance
+ * - value(s) for the key(s)
+ * - setter function for value(s)
+ * - async getter for value(s)
+ * - error state
+ * - error setter
+ */
 export function useNonLocalStorage<VT extends ValueType, T extends string | Array<string> = string> (
   id: string,
   key: T,
@@ -29,7 +60,6 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
   const bind = options?.bind ?? true
 
-  // bind to get item changes
   useEffect(() => {
     if (!nls) return
 
@@ -75,6 +105,10 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
   }, [key])
 
   if (typeof key === 'string') {
+    /**
+     * Async getter for the single item.
+     * @returns Promise resolving to the item value or undefined.
+     */
     const getValue = async (): Promise<ItemType | undefined> => {
       try {
         const result = await nls.getItem(key)
@@ -84,6 +118,10 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
       }
     }
 
+    /**
+     * Setter for the single item.
+     * @param val - The new value to set.
+     */
     const setValue = (val: ItemType | undefined) => {
       if (!val) return
       setValues(prevValues => ({
@@ -95,6 +133,10 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
     return [nls, values ? values[key] : undefined, setValue, getValue, error, setError] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
   }
 
+  /**
+   * Async getter for multiple items.
+   * @returns Promise resolving to the items object or undefined.
+   */
   const getValues = async (): Promise<ItemsType | undefined> => {
     try {
       return nls.getItems(key as Array<string>)

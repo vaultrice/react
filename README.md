@@ -1,69 +1,84 @@
-# React + TypeScript + Vite
+# Vaultrice React SDK
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+<!-- [![Tests](https://github.com/vaultrice/react/workflows/node/badge.svg)](https://github.com/vaultrice/react/actions?query=workflow%3Anode) -->
+[![npm version](https://img.shields.io/npm/v/@vaultrice/react.svg?style=flat-square)](https://www.npmjs.com/package/@vaultrice/react)
 
-Currently, two official plugins are available:
+A set of React hooks and utilities for building real-time, offline-first, and optionally end-to-end encrypted applications using [Vaultrice NonLocalStorage](https://www.npmjs.com/package/@vaultrice/sdk).  
+**Under the hood, @vaultrice/react uses [@vaultrice/sdk](https://www.npmjs.com/package/@vaultrice/sdk) for all storage, sync, and presence features.**
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+> Vaultrice is ideal for collaborative apps, cross-device sync, and privacy-sensitive use cases—without custom backend infrastructure.
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Table of Contents
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+1. [Features](#features)
+2. [Installation](#installation)
+3. [Quick Start](#quick-start)
+4. [Core Hooks](#core-hooks)
+5. [Example: Collaborative Counter](#example-collaborative-counter)
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+---
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Features
+
+- **Offline-first:** Local queueing and automatic sync when online.
+- **Real-time presence & messaging:** Built-in WebSocket support for live updates and user presence.
+- **End-to-end encryption:** Optional client-side encryption for sensitive data.
+- **Cross-device sync:** Seamless state sharing across browsers and devices.
+- **TTL & metadata:** Per-key expiration and rich metadata.
+- **Easy integration:** Simple React hooks for state, counters, messaging, and more.
+
+---
+
+## Installation
+
+```bash
+npm install @vaultrice/react
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Quick Start
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```tsx
+import { useNonLocalState } from '@vaultrice/react'
+
+const [value, setValue, error] = useNonLocalState<string>('myRoom', 'myKey', {
+  credentials: {
+    projectId: 'YOUR_PROJECT_ID',
+    apiKey: 'YOUR_API_KEY',
+    apiSecret: 'YOUR_API_SECRET'
+  }
+})
+
+// Use value in your UI, update with setValue(newValue)
 ```
+
+---
+
+## Core Hooks
+
+- `useNonLocalState` – Manage a single value with real-time sync.
+- `useMultiNonLocalStates` – Manage multiple keys atomically.
+- `useNonLocalCounter` – Atomic increment/decrement for counters.
+- `useMessaging` – Real-time messaging and presence.
+- `createNonLocalStore` – Simple fetch/post API for a single key.
+
+---
+
+## Example: Collaborative Counter
+
+```tsx
+import { useNonLocalCounter } from '@vaultrice/react'
+
+const [count, increment, decrement, error] = useNonLocalCounter('roomId', 'counterKey', { credentials: { ... } })
+
+<button onClick={() => increment()}>+1</button>
+<button onClick={() => decrement()}>-1</button>
+<p>Current count: {count}</p>
+```
+
+---
+
+**Try Vaultrice for [free](https://www.vaultrice.app/register)**

@@ -1,0 +1,19 @@
+{
+  "entryPoints": [
+    "src/index.ts"
+  ],
+  "out": "docs",
+  "name": "Vaultrice React SDK",
+  "includeVersion": true,
+  "excludePrivate": true,
+  "excludeInternal": true,
+  "tsconfig": "tsconfig.json",
+  "hideGenerator": false,
+  "entryPointStrategy": "resolve",
+  "categorizeByGroup": false,
+  "defaultCategory": "API",
+  "categoryOrder": ["Classes", "Functions", "Types", "*"],
+  "sort": ["source-order"],
+  "readme": "README.md",
+  "treatWarningsAsErrors": false
+}

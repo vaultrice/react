@@ -1,10 +1,33 @@
 import { useNonLocalStorage } from './useNonLocalStorage'
 import type { UseNonLocalStorageOptions } from './types'
 
-export const useNonLocalCounter = (id: string, key: string, options: UseNonLocalStorageOptions) => {
+/**
+ * React hook for managing a numeric counter in NonLocalStorage.
+ *
+ * Provides functions to increment and decrement the counter value atomically,
+ * with error handling and metadata updates.
+ *
+ * @param id - The unique identifier for the NonLocalStorage instance.
+ * @param key - The key to store and retrieve the counter value.
+ * @param options - Options for NonLocalStorage, including credentials and instance options.
+ * @returns A tuple containing:
+ * - value: The current counter value.
+ * - increment: Function to increment the counter.
+ * - decrement: Function to decrement the counter.
+ * - error: Any error encountered during operations.
+ */
+export const useNonLocalCounter = (
+  id: string,
+  key: string,
+  options: UseNonLocalStorageOptions
+) => {
   const [nls, value, setValue,, error, setError] = useNonLocalStorage(id, key, options)
 
-  // function to increment/decrement
+  /**
+   * Increments the counter value in NonLocalStorage.
+   * @param val - The amount to increment by (optional).
+   * @param opts - Additional options for incrementing (optional).
+   */
   const increment = async (val?: number, opts?: any) => {
     try {
       const meta = await nls.incrementItem(key, val, opts)
@@ -22,6 +45,11 @@ export const useNonLocalCounter = (id: string, key: string, options: UseNonLocal
     }
   }
 
+  /**
+   * Decrements the counter value in NonLocalStorage.
+   * @param val - The amount to decrement by (optional).
+   * @param opts - Additional options for decrementing (optional).
+   */
   const decrement = async (val?: number, opts?: any) => {
     try {
       const meta = await nls.decrementItem(key, val, opts)
