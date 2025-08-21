@@ -1,8 +1,7 @@
 {
   "name": "@vaultrice/react",
-  "private": true,
   "globalName": "VaultriceReact",
-  "version": "0.0.1",
+  "version": "0.8.0",
   "type": "module",
   "main": "./dist/cjs/index.js",
   "module": "./dist/esm/index.js",

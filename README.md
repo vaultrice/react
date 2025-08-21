@@ -120,7 +120,7 @@ const [value, setValue] = useNonLocalState<string>('objectId', 'myKey'}
 
 ## Support
 
-Have questions, ideas or feedback? [Open an issue](https://github.com/vaultrice/sdk) or email us at [support@vaultrice.com](mailto:support@vaultrice.com)
+Have questions, ideas or feedback? [Open an issue](https://github.com/vaultrice/react) or email us at [support@vaultrice.com](mailto:support@vaultrice.com)
 
 ---
 
