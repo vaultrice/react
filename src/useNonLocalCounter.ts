@@ -1,9 +1,8 @@
-import type { InstanceOptions, Credentials } from '@vaultrice/sdk'
-
 import { useNonLocalStorage } from './useNonLocalStorage'
+import type { UseNonLocalStorageOptions } from './types'
 
-export const useNonLocalCounter = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
-  const [nls, value, setValue,, error, setError] = useNonLocalStorage(id, key, options)
+export const useNonLocalCounter = (id: string, key: string, options: UseNonLocalStorageOptions) => {
+  const [nls, value, setValue, error, setError] = useNonLocalStorage(id, key, options)
 
   // function to increment/decrement
   const increment = async (val?: number, opts?: any) => {
@@ -13,10 +12,10 @@ export const useNonLocalCounter = (id: string, key: string, options: { bind: tru
       setValue({
         ...value,
         value: meta?.value,
-        expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
-        keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
-        createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
-        updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
+        expiresAt: meta?.expiresAt,
+        keyVersion: meta?.keyVersion,
+        createdAt: meta?.createdAt,
+        updatedAt: meta?.updatedAt
       })
     } catch (err) {
       setError(err)
@@ -30,10 +29,10 @@ export const useNonLocalCounter = (id: string, key: string, options: { bind: tru
       setValue({
         ...value,
         value: meta?.value,
-        expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
-        keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
-        createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
-        updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
+        expiresAt: meta?.expiresAt,
+        keyVersion: meta?.keyVersion,
+        createdAt: meta?.createdAt,
+        updatedAt: meta?.updatedAt
       })
     } catch (err) {
       setError(err)

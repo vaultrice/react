@@ -2,7 +2,7 @@ import type { InstanceOptions, ValueType, Credentials } from '@vaultrice/sdk'
 
 import { getNonLocalStorage } from './nlsInstances'
 
-export const createNonLocalStore = (id: string, key: string, options: { instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
+export const createNonLocalStore = (id: string, key: string, options: { instanceOptions: InstanceOptions, credentials?: Credentials }) => {
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
 
   return {

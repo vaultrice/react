@@ -3,7 +3,7 @@ import type { InstanceOptions, JoinedConnections, JoinedConnection, Credentials 
 
 import { getNonLocalStorage } from './nlsInstances'
 
-export const useMessaging = (id: string, onMessage: Function, options: { instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
+export const useMessaging = (id: string, onMessage: Function, options: { instanceOptions: InstanceOptions, credentials?: Credentials }) => {
   const [connected, setConnected] = useState<JoinedConnections>([])
   const [error, setError] = useState<any>()
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)

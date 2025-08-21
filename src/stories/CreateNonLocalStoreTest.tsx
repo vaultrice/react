@@ -38,7 +38,7 @@ export const CreateNonLocalStoreTest = ({}: CreateNonLocalStoreTestProps) => {
           className='storybook-button'
           onClick={async () => {
             const v = await fetch()
-            setStore(v.value)
+            setStore(v?.value)
           }}
         >
           get

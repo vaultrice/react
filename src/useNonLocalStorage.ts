@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react'
-import type { InstanceOptions, ItemType, ItemsType, Credentials } from '@vaultrice/sdk'
+import type { ItemType, ItemsType, NonLocalStorage, ValueType } from '@vaultrice/sdk'
+import type { UseNonLocalStorageOptions, UseNonLocalStorageStringReturn, UseNonLocalStorageArrayReturn } from './types'
 
 import { getNonLocalStorage } from './nlsInstances'
 
-async function getItem (nls: any, key: string | Array<string>, set: Function) {
+async function getItem<VT> (nls: NonLocalStorage, key: string | Array<string>, set: Function) {
   let res
 
   if (typeof key === 'string') {
-    res = await nls.getItem(key)
+    res = await nls.getItem<VT>(key)
     if (set) set({ [`${key}`]: res })
   } else {
     res = await nls.getItems(key)
@@ -17,7 +18,11 @@ async function getItem (nls: any, key: string | Array<string>, set: Function) {
   return res
 }
 
-export const useNonLocalStorage = (id: string, key: string | Array<string>, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
+export function useNonLocalStorage<VT extends ValueType, T extends string | Array<string> = string> (
+  id: string,
+  key: T,
+  options: UseNonLocalStorageOptions
+): T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn {
   const [values, setValues] = useState<ItemsType | undefined>()
   const [error, setError] = useState<any>()
 
@@ -29,17 +34,17 @@ export const useNonLocalStorage = (id: string, key: string | Array<string>, opti
     if (!nls) return
 
     try {
-      getItem(nls, key, setValues)
+      getItem<VT>(nls, key, setValues)
     } catch (err) {
       setError(err)
     }
 
     const getHandler = (key: string) => {
       return function handler (item: ItemType) {
-        setValues({
-          ...values,
+        setValues(prevValues => ({
+          ...prevValues,
           [`${key}`]: item
-        })
+        }))
       }
     }
 
@@ -47,7 +52,7 @@ export const useNonLocalStorage = (id: string, key: string | Array<string>, opti
     const handlers: { [key: string]: Function } = {}
 
     if (bind) {
-      const keys = typeof key === 'string' ? [key] : key
+      const keys = Array.isArray(key) ? key : [key]
 
       keys.forEach(k => {
         const handler = getHandler(k)
@@ -69,35 +74,33 @@ export const useNonLocalStorage = (id: string, key: string | Array<string>, opti
   }, [key])
 
   if (typeof key === 'string') {
-    const getValue = async () => {
-      let val
+    const getValue = async (): Promise<ItemType | undefined> => {
       try {
-        val = nls.getItem(key)[key]
+        const result = await nls.getItem(key)
+        return result
       } catch (err) {
         setError(err)
       }
-      return val?.value
     }
 
-    const setValue = (val: any) => {
-      setValues({
-        ...values,
+    const setValue = (val: ItemType | undefined) => {
+      if (!val) return
+      setValues(prevValues => ({
+        ...prevValues,
         [`${key}`]: val
-      })
+      }))
     }
 
-    return [nls, values ? values[key] : undefined, setValue, getValue, error, setError]
+    return [nls, values ? values[key] : undefined, setValue, getValue, error, setError] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
   }
 
-  const getValues = async () => {
-    let val
+  const getValues = async (): Promise<ItemsType | undefined> => {
     try {
-      val = nls.getItem(key)
+      return nls.getItems(key as Array<string>)
     } catch (err) {
       setError(err)
     }
-    return val
   }
 
-  return [nls, values, setValues, getValues]
+  return [nls, values, setValues, getValues, error, setError] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
 }

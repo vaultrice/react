@@ -1,27 +1,20 @@
-import type { InstanceOptions, ValueType, Credentials } from '@vaultrice/sdk'
+import type { ValueType } from '@vaultrice/sdk'
 
 import { useNonLocalStorage } from './useNonLocalStorage'
+import type { UseNonLocalStorageOptions } from './types'
 
-export const useNonLocalState = (id: string, key: string, options: { bind: true, instanceOptions: InstanceOptions, credentials?: Credentials, fetchAccessToken: Function }) => {
-  const [nls, value, setValue,, error, setError] = useNonLocalStorage(id, key, options)
+export function useNonLocalState<VT extends ValueType> (id: string, key: string, options: UseNonLocalStorageOptions) {
+  const [nls, value, setValue, error, setError] = useNonLocalStorage<VT>(id, key, options)
 
   // function to setItem
   const setItem = async (val: ValueType, opts?: any) => {
     try {
       const meta = await nls.setItem(key, val, opts)
-
-      setValue({
-        ...value,
-        value: val,
-        expiresAt: meta?.expiresAt ?? Date.now(), // fallback to current time or appropriate default
-        keyVersion: meta?.keyVersion ?? 1,        // fallback to default version
-        createdAt: meta?.createdAt ?? Date.now(), // fallback to current time
-        updatedAt: meta?.updatedAt ?? Date.now()  // update timestamp
-      })
+      setValue(meta)
     } catch (err) {
       setError(err)
     }
   }
 
-  return [value?.value, setItem, error]
+  return [value?.value as VT, setItem, error]
 }
