@@ -17,6 +17,7 @@ A set of React hooks and utilities for building real-time, offline-first, and op
 3. [Quick Start](#quick-start)
 4. [Core Hooks](#core-hooks)
 5. [Example: Collaborative Counter](#example-collaborative-counter)
+6. [Helpers](#helpers)
 
 ---
 
@@ -98,4 +99,4 @@ const [value, setValue] = useNonLocalState<string>('myRoom', 'myKey'}
 
 ```
 
-**Try Vaultrice for [free](https://www.vaultrice.app/register)**
+**Try Vaultrice for [free](https://www.vaultrice.app/register)!**
