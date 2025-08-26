@@ -1,5 +1,6 @@
 import terser from '@rollup/plugin-terser'
 import typescript from 'rollup-plugin-typescript2'
+// import postcss from 'rollup-plugin-postcss'
 import { readFile } from 'node:fs/promises'
 
 const pkg = JSON.parse(await readFile(new URL('./package.json', import.meta.url)))
