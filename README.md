@@ -18,6 +18,7 @@ A set of React hooks and utilities for building real-time, offline-first, and op
 4. [Core Hooks](#core-hooks)
 5. [Example: Collaborative Counter](#example-collaborative-counter)
 6. [Helpers](#helpers)
+7. [Related Packages](#related-packages)
 
 ---
 
@@ -117,6 +118,12 @@ import { useNonLocalState } from '@vaultrice/react'
 const [value, setValue] = useNonLocalState<string>('objectId', 'myKey'}
 
 ```
+
+## Related Packages
+
+  - [Vaultrice TS/JS SDK](https://github.com/vaultrice/sdk)
+  - [Vaultrice React.js Compoments](https://github.com/vaultrice/react-components)
+
 
 ## Support
 
