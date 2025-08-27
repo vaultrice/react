@@ -21,7 +21,7 @@ export const useNonLocalCounter = (
   key: string,
   options: UseNonLocalStorageOptions
 ) => {
-  const [nls, value, setValue,, error, setError] = useNonLocalStorage(id, key, options)
+  const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage(id, key, options)
 
   /**
    * Increments the counter value in NonLocalStorage.
@@ -67,5 +67,5 @@ export const useNonLocalCounter = (
     }
   }
 
-  return [value?.value, increment, decrement, error]
+  return [value?.value, increment, decrement, error, isLoading]
 }

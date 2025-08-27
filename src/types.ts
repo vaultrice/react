@@ -36,7 +36,9 @@ export type UseNonLocalStorageStringReturn = [
   /** Error state */
   any,
   /** Error setter */
-  React.Dispatch<React.SetStateAction<any>>
+  React.Dispatch<React.SetStateAction<any>>,
+  /** isLoading */
+  boolean
 ]
 
 /**
@@ -55,5 +57,7 @@ export type UseNonLocalStorageArrayReturn = [
   /** Error state */
   any,
   /** Error setter */
-  React.Dispatch<React.SetStateAction<any>>
+  React.Dispatch<React.SetStateAction<any>>,
+  /** isLoading */
+  boolean
 ]

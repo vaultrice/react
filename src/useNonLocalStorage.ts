@@ -56,6 +56,7 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
 ): T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn {
   const [values, setValues] = useState<ItemsType | undefined>()
   const [error, setError] = useState<any>()
+  const [isLoading, setIsLoading] = useState<boolean>(true)
 
   const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
   const bind = options?.bind ?? true
@@ -63,10 +64,15 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
   useEffect(() => {
     if (!nls) return
 
+    setIsLoading(true)
     try {
-      getItem<VT>(nls, key, setValues)
+      getItem<VT>(nls, key, (val: any) => {
+        setValues(val)
+        setIsLoading(false)
+      })
     } catch (err) {
       setError(err)
+      setIsLoading(false)
     }
 
     const getHandler = (key: string) => {
@@ -110,11 +116,14 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
      * @returns Promise resolving to the item value or undefined.
      */
     const getValue = async (): Promise<ItemType | undefined> => {
+      setIsLoading(true)
       try {
         const result = await nls.getItem(key)
+        setIsLoading(false)
         return result
       } catch (err) {
         setError(err)
+        setIsLoading(false)
       }
     }
 
@@ -130,7 +139,7 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
       }))
     }
 
-    return [nls, values ? values[key] : undefined, setValue, getValue, error, setError] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
+    return [nls, values ? values[key] : undefined, setValue, getValue, error, setError, isLoading] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
   }
 
   /**
@@ -138,12 +147,16 @@ export function useNonLocalStorage<VT extends ValueType, T extends string | Arra
    * @returns Promise resolving to the items object or undefined.
    */
   const getValues = async (): Promise<ItemsType | undefined> => {
+    setIsLoading(true) // <-- Start loading
     try {
-      return nls.getItems(key as Array<string>)
+      const result = await nls.getItems(key as Array<string>)
+      setIsLoading(false) // <-- Stop loading
+      return result
     } catch (err) {
       setError(err)
+      setIsLoading(false) // <-- Stop loading on error
     }
   }
 
-  return [nls, values, setValues, getValues, error, setError] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
+  return [nls, values, setValues, getValues, error, setError, isLoading] as T extends string ? UseNonLocalStorageStringReturn : UseNonLocalStorageArrayReturn
 }

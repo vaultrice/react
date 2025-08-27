@@ -22,7 +22,7 @@ export function useNonLocalState<VT extends ValueType> (
   key: string,
   options: UseNonLocalStorageOptions
 ) {
-  const [nls, value, setValue,, error, setError] = useNonLocalStorage<VT>(id, key, options)
+  const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage<VT>(id, key, options)
 
   /**
    * Sets the value for the specified key in NonLocalStorage.
@@ -38,5 +38,5 @@ export function useNonLocalState<VT extends ValueType> (
     }
   }
 
-  return [value?.value as VT, setItem, error]
+  return [value?.value as VT, setItem, error, isLoading]
 }

@@ -20,7 +20,7 @@ export const useMultiNonLocalStates = (
   keys: Array<string>,
   options: UseNonLocalStorageOptions
 ) => {
-  const [nls, values, setValues,, error, setError] = useNonLocalStorage(id, keys, options)
+  const [nls, values, setValues,, error, setError, isLoading] = useNonLocalStorage(id, keys, options)
 
   /**
    * Sets multiple items in NonLocalStorage.
@@ -40,5 +40,5 @@ export const useMultiNonLocalStates = (
     }
   }
 
-  return [values, setItems, error]
+  return [values, setItems, error, isLoading]
 }
