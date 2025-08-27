@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - not released yet
 
+## [0.9.2](https://github.com/vaultrice/react/compare/v0.9.1...v0.9.2) - 2025-08-27
+
+- fix react in peer dependencies
+
 ## [0.9.1](https://github.com/vaultrice/react/compare/v0.9.0...v0.9.1) - 2025-08-25
 
 - update dependencies
