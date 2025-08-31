@@ -13,7 +13,7 @@ const Instances: any = {}
  */
 function buildKey (instanceOptions: InstanceOptions, credentials: Credentials): string {
   const credentialsStr = `${credentials.projectId}-${credentials.apiKey}`
-  const optionsStr = !instanceOptions.class ? `__undefined__-${instanceOptions.id}` : `${instanceOptions.class}-${instanceOptions.id}`
+  const optionsStr = `${instanceOptions.class || '_undefined_'}-${instanceOptions.id}`
   return `${credentialsStr}-${optionsStr}`
 }
 
