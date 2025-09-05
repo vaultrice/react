@@ -1,5 +1,8 @@
 export * as vaultrice from './config'
 export { useNonLocalState } from './useNonLocalState'
+export { useNonLocalArray } from './useNonLocalArray'
+export { useNonLocalObject } from './useNonLocalObject'
+export { useNonLocalGeneralState } from './useNonLocalGeneralState'
 export { useMultiNonLocalStates } from './useMultiNonLocalStates'
 export { useNonLocalCounter } from './useNonLocalCounter'
 export { useMessaging } from './useMessaging'
