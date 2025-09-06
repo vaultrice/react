@@ -5,9 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0](https://github.com/vaultrice/react/compare/v0.9.0...v1.0.0) - YYYY-MM-DD
+## [1.0.0](https://github.com/vaultrice/react/compare/v0.9.8...v1.0.0) - 2025-09-06
 
-- not released yet
+- First official stable release. This marks it as production-ready.
+- Added splice() array helper (server + offline behavior) for in-place remove/replace operations on array values.
+- Optional Optimistic Concurrency Control (OCC): all write operations can accept an optional `updatedAt` value to enable conflict detection (server returns HTTP 409 on mismatch). Supported across setItem, setItems, increment, decrement, merge, push, setIn, splice.
+- Public API is considered stable; any future breaking changes will require a major version bump per SemVer.
+- No migration steps required for users upgrading from 0.9.x.
+- Thanks to all contributors and early adopters.
 
 ## [0.9.8](https://github.com/vaultrice/react/compare/v0.9.7...v0.9.8) - 2025-09-05
 

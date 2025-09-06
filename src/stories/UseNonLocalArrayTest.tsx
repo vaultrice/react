@@ -10,13 +10,19 @@ export const UseNonLocalArrayTest = ({ initialItems = [] }: UseNonLocalArrayTest
   const [inputValue, setInput] = useState('')
   const [initialized, setInitialized] = useState(false)
 
-  const [array, { push, setArray }, error, isLoading] = useNonLocalArray<any>('useNonLocalArray_test', 'test_key', {
+  // include splice in the actions destructure
+  const [array, { push, setArray, splice }, error, isLoading] = useNonLocalArray<any>('useNonLocalArray_test', 'test_key', {
     credentials: {
       projectId: import.meta.env.VITE_VAULTRICE_PROJECTID,
       apiKey: import.meta.env.VITE_VAULTRICE_APIKEY,
       apiSecret: import.meta.env.VITE_VAULTRICE_APISECRET
     }
   })
+
+  // splice inputs
+  const [spliceStart, setSpliceStart] = useState('')
+  const [spliceDeleteCount, setSpliceDeleteCount] = useState('')
+  const [spliceItemsInput, setSpliceItemsInput] = useState('')
 
   // Initialize array with provided initial items
   useEffect(() => {
@@ -58,6 +64,38 @@ export const UseNonLocalArrayTest = ({ initialItems = [] }: UseNonLocalArrayTest
 
   const handleClearArray = () => {
     setArray([])
+  }
+
+  // splice handler
+  const handleSplice = () => {
+    const start = parseInt(spliceStart, 10)
+    const deleteCount = parseInt(spliceDeleteCount, 10)
+
+    if (Number.isNaN(start) || Number.isNaN(deleteCount)) {
+      alert('Start index and delete count must be valid integers')
+      return
+    }
+
+    let items: any[] | undefined
+    if (spliceItemsInput.trim()) {
+      try {
+        const parsed = JSON.parse(spliceItemsInput)
+        if (!Array.isArray(parsed)) {
+          alert('Items must be a JSON array (e.g. ["a", "b"])')
+          return
+        }
+        items = parsed
+        // eslint-disable-next-line no-unused-vars
+      } catch (e) {
+        alert('Invalid JSON for items')
+        return
+      }
+    }
+
+    splice(start, deleteCount, items)
+    setSpliceStart('')
+    setSpliceDeleteCount('')
+    setSpliceItemsInput('')
   }
 
   if (isLoading) {
@@ -149,6 +187,46 @@ export const UseNonLocalArrayTest = ({ initialItems = [] }: UseNonLocalArrayTest
           >
             Clear Array
           </button>
+        </div>
+      </div>
+
+      {/* Splice UI */}
+      <div style={{ marginBottom: '20px' }}>
+        <h4>Splice (remove/insert/replace)</h4>
+        <div style={{ display: 'flex', gap: '10px', marginBottom: '8px' }}>
+          <input
+            type='number'
+            value={spliceStart}
+            onChange={(e) => setSpliceStart(e.target.value)}
+            placeholder='start index'
+            style={{ padding: '8px', width: '120px' }}
+          />
+          <input
+            type='number'
+            value={spliceDeleteCount}
+            onChange={(e) => setSpliceDeleteCount(e.target.value)}
+            placeholder='delete count'
+            style={{ padding: '8px', width: '120px' }}
+          />
+          <input
+            type='text'
+            value={spliceItemsInput}
+            onChange={(e) => setSpliceItemsInput(e.target.value)}
+            placeholder='items JSON (e.g. ["x", 1])'
+            style={{ flex: 1, padding: '8px' }}
+          />
+        </div>
+        <div>
+          <button
+            type='button'
+            className='storybook-button storybook-button--primary'
+            onClick={handleSplice}
+          >
+            Splice
+          </button>
+          <p style={{ fontSize: '12px', color: '#666', marginTop: '8px' }}>
+            Provide start index and delete count. Optionally provide a JSON array of items to insert.
+          </p>
         </div>
       </div>
 

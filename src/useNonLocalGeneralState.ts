@@ -14,7 +14,7 @@ import type { UseNonLocalStorageOptions } from './types'
  * @param options - Options for NonLocalStorage, including credentials and instance options.
  * @returns A tuple containing:
  * - value: The current value for the specified key.
- * - actions: Object with various action methods (setItem, push, merge, setIn, etc.).
+ * - actions: Object with various action methods (setItem, push, splice, merge, setIn, etc.).
  * - error: Any error encountered during operations.
  * - isLoading: Loading state.
  */
@@ -31,7 +31,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param val - The value to store.
      * @param opts - Additional options for storing the value (optional).
      */
-    setItem: async (val: ValueType, opts?: any) => {
+    setItem: async (val: ValueType, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => {
       try {
         const meta = await nls.setItem(key, val, opts)
         setValue(meta)
@@ -45,7 +45,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param element - The element to append.
      * @param opts - Additional options (optional).
      */
-    push: async (element: any, opts?: any) => {
+    push: async (element: any, opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.push(key, element, opts)
         setValue(meta)
@@ -59,7 +59,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param objectToMerge - The object to merge.
      * @param opts - Additional options (optional).
      */
-    merge: async (objectToMerge: Record<string, any>, opts?: any) => {
+    merge: async (objectToMerge: Record<string, any>, opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.merge(key, objectToMerge, opts)
         setValue(meta)
@@ -74,9 +74,25 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param val - The value to set.
      * @param opts - Additional options (optional).
      */
-    setIn: async (path: string, val: any, opts?: any) => {
+    setIn: async (path: string, val: any, opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.setIn(key, path, val, opts)
+        setValue(meta)
+      } catch (err) {
+        setError(err)
+      }
+    },
+
+    /**
+     * Splices an array stored at the key (remove/replace/insert elements).
+     * @param startIndex - The index at which to start changing the array.
+     * @param deleteCount - The number of elements to remove.
+     * @param items - Optional array of items to insert.
+     * @param opts - Additional options (optional).
+     */
+    splice: async (startIndex: number, deleteCount: number, items?: any[], opts?: { ttl?: number, updatedAt?: number }) => {
+      try {
+        const meta = await nls.splice(key, startIndex, deleteCount, items, opts)
         setValue(meta)
       } catch (err) {
         setError(err)

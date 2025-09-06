@@ -27,7 +27,7 @@ export const useMultiNonLocalStates = (
    * @param items - An object mapping keys to value/option objects.
    */
   const setItems = async (
-    items: Record<string, { value: ValueType, ttl?: number, ifAbsent?: boolean }>
+    items: Record<string, { value: ValueType, ttl?: number, ifAbsent?: boolean, updatedAt?: number }>
   ) => {
     try {
       const res = await nls.setItems(items)

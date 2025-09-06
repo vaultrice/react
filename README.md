@@ -71,7 +71,7 @@ const [value, setValue, error] = useNonLocalState<string>('myRoom', 'myKey', {
 ### Specialized Hooks
 
 - **`useNonLocalCounter`** – Atomic increment/decrement for counters.
-- **`useNonLocalArray`** – Array management with atomic push operations.
+- **`useNonLocalArray`** – Array management with atomic push and splice operations.
 - **`useNonLocalObject`** – Object management with merge and nested operations.
 - **`useNonLocalGeneralState`** – General state with all atomic operations available.
 
@@ -116,12 +116,22 @@ await decrement(2)
 ```tsx
 import { useNonLocalArray } from '@vaultrice/react'
 
-const [items, { push, setArray }, error] = useNonLocalArray('roomId', 'listKey', { 
+const [items, { push, splice, setArray }, error] = useNonLocalArray('roomId', 'listKey', { 
   credentials: { ... } 
 })
 
 // Atomically append to array
 await push('new item')
+
+// Splice examples — atomically remove/insert/replace elements:
+// Remove 1 item at index 2
+await splice(2, 1)
+
+// Insert items at index 1 without deleting
+await splice(1, 0, ['inserted'])
+
+// Replace 2 items starting at index 0 with new items
+await splice(0, 2, ['a', 'b'])
 
 // Replace entire array
 await setArray(['item1', 'item2', 'item3'])
@@ -157,9 +167,12 @@ const [value, actions, error] = useNonLocalGeneralState('roomId', 'dataKey', {
 
 // All operations available
 await actions.setItem(value)
-await actions.push(element)        // for arrays
-await actions.merge(obj)           // for objects  
-await actions.setIn(path, value)   // for nested objects
+await actions.push(element)               // for arrays
+// Splice via the general actions API (startIndex, deleteCount, items?)
+await actions.splice(1, 0, [newItem])     // insert newItem at index 1
+await actions.splice(3, 2)                // remove 2 items starting at index 3
+await actions.merge(obj)                  // for objects  
+await actions.setIn(path, value)          // for nested objects
 ```
 
 ---
@@ -197,7 +210,7 @@ function CollaborativeCounter() {
 import { useNonLocalArray } from '@vaultrice/react'
 
 function TodoList() {
-  const [todos, { push }, error] = useNonLocalArray('room1', 'todos', {
+  const [todos, { push, splice }, error] = useNonLocalArray('room1', 'todos', {
     credentials: { ... }
   })
 
@@ -365,7 +378,7 @@ const [count, increment, decrement, error, isLoading] = useNonLocalCounter(id, k
 
 ### useNonLocalArray
 ```tsx
-const [array, { push, setArray }, error, isLoading] = useNonLocalArray<T>(id, key, options)
+const [array, { push, splice, setArray }, error, isLoading] = useNonLocalArray<T>(id, key, options)
 ```
 
 ### useNonLocalObject
@@ -375,7 +388,7 @@ const [object, { merge, setIn, setObject }, error, isLoading] = useNonLocalObjec
 
 ### useNonLocalGeneralState
 ```tsx
-const [value, { setItem, push, merge, setIn }, error, isLoading] = useNonLocalGeneralState<T>(id, key, options)
+const [value, { setItem, push, splice, merge, setIn }, error, isLoading] = useNonLocalGeneralState<T>(id, key, options)
 ```
 
 ### useMultiNonLocalStates

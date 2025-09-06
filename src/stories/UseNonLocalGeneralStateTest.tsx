@@ -16,8 +16,44 @@ export const UseNonLocalGeneralStateTest = ({ dataType = 'object' }: UseNonLocal
     }
   })
 
+  // splice state for array operations
+  const [spliceStart, setSpliceStart] = useState('')
+  const [spliceDeleteCount, setSpliceDeleteCount] = useState('')
+  const [spliceItemsInput, setSpliceItemsInput] = useState('')
+
   if (isLoading) {
     return <div>Loading...</div>
+  }
+
+  const handleSplice = () => {
+    const start = parseInt(spliceStart, 10)
+    const deleteCount = parseInt(spliceDeleteCount, 10)
+
+    if (Number.isNaN(start) || Number.isNaN(deleteCount)) {
+      alert('Start index and delete count must be valid integers')
+      return
+    }
+
+    let items: any[] | undefined
+    if (spliceItemsInput.trim()) {
+      try {
+        const parsed = JSON.parse(spliceItemsInput)
+        if (!Array.isArray(parsed)) {
+          alert('Items must be a JSON array (e.g. ["a", "b"])')
+          return
+        }
+        items = parsed
+        // eslint-disable-next-line no-unused-vars
+      } catch (e) {
+        alert('Invalid JSON for items')
+        return
+      }
+    }
+
+    actions.splice(start, deleteCount, items)
+    setSpliceStart('')
+    setSpliceDeleteCount('')
+    setSpliceItemsInput('')
   }
 
   return (
@@ -96,6 +132,38 @@ export const UseNonLocalGeneralStateTest = ({ dataType = 'object' }: UseNonLocal
               }}
             >
               Push
+            </button>
+          </div>
+
+          {/* Splice UI for general state when it's an array */}
+          <div style={{ display: 'flex', gap: '10px', marginBottom: '10px', marginTop: '8px' }}>
+            <input
+              type='number'
+              value={spliceStart}
+              onChange={(e) => setSpliceStart(e.target.value)}
+              placeholder='start index'
+              style={{ padding: '8px', width: '120px' }}
+            />
+            <input
+              type='number'
+              value={spliceDeleteCount}
+              onChange={(e) => setSpliceDeleteCount(e.target.value)}
+              placeholder='delete count'
+              style={{ padding: '8px', width: '120px' }}
+            />
+            <input
+              type='text'
+              value={spliceItemsInput}
+              onChange={(e) => setSpliceItemsInput(e.target.value)}
+              placeholder='items JSON (e.g. ["x", 1])'
+              style={{ flex: 1, padding: '8px' }}
+            />
+            <button
+              type='button'
+              className='storybook-button storybook-button--secondary'
+              onClick={handleSplice}
+            >
+              Splice
             </button>
           </div>
         </div>

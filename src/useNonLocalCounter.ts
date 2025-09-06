@@ -28,7 +28,7 @@ export const useNonLocalCounter = (
    * @param val - The amount to increment by (optional).
    * @param opts - Additional options for incrementing (optional).
    */
-  const increment = async (val?: number, opts?: any) => {
+  const increment = async (val?: number, opts?: { ttl?: number, updatedAt?: number }) => {
     try {
       const meta = await nls.incrementItem(key, val, opts)
 
@@ -50,7 +50,7 @@ export const useNonLocalCounter = (
    * @param val - The amount to decrement by (optional).
    * @param opts - Additional options for decrementing (optional).
    */
-  const decrement = async (val?: number, opts?: any) => {
+  const decrement = async (val?: number, opts?: { ttl?: number, updatedAt?: number }) => {
     try {
       const meta = await nls.decrementItem(key, val, opts)
 

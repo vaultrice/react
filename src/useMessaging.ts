@@ -45,18 +45,24 @@ export const useMessaging = (
     }
 
     getConnections()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  // re-run if nls instance changes
+  }, [nls])
 
   // bind to get item changes
   useEffect(() => {
-    // bind events
+    if (!nls) return
+
+    // use functional updates to avoid stale closures and duplicate entries
     const joinAction = (joined: JoinedConnection) => {
-      if (!connected.find(c => c.connectionId === joined.connectionId)) setConnected([joined].concat(connected ?? []))
+      setConnected(prev => {
+        // overwrite any existing connection with the same connectionId
+        const others = (prev ?? []).filter(c => c.connectionId !== joined.connectionId)
+        return [joined, ...others]
+      })
     }
 
     const leaveAction = (left: LeavedConnection) => {
-      setConnected((connected ?? []).filter(c => c.connectionId !== left.connectionId))
+      setConnected(prev => (prev ?? []).filter(c => c.connectionId !== left.connectionId))
     }
 
     nls.on('message', onMessage)
@@ -65,12 +71,13 @@ export const useMessaging = (
 
     // unbind
     return () => {
+      if (!nls) return
       nls.off('message', onMessage)
       nls.off('presence:join', joinAction)
       nls.off('presence:leave', leaveAction)
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [connected])
+  // depend on nls and onMessage (handlers are stable/functional)
+  }, [nls, onMessage])
 
   return [
     connected,

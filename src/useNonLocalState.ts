@@ -29,7 +29,7 @@ export function useNonLocalState<VT extends ValueType> (
    * @param val - The value to store.
    * @param opts - Additional options for storing the value (optional).
    */
-  const setItem = async (val: ValueType, opts?: any) => {
+  const setItem = async (val: ValueType, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => {
     try {
       const meta = await nls.setItem(key, val, opts)
       setValue(meta)
