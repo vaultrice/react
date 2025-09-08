@@ -267,7 +267,7 @@ function UserProfile() {
 import { useMessaging } from '@vaultrice/react'
 
 function ChatRoom() {
-  const [connected, send, join, leave, error] = useMessaging(
+  const [connected, send, join, leave, getConnectionId, error] = useMessaging(
     'chatroom1',
     (message) => {
       console.log('Received:', message)
@@ -398,7 +398,7 @@ const [values, setItems, error, isLoading] = useMultiNonLocalStates(id, keys, op
 
 ### useMessaging
 ```tsx
-const [connected, send, join, leave, error] = useMessaging(id, onMessage, options)
+const [connected, send, join, leave, getConnectionId, error] = useMessaging(id, onMessage, options)
 ```
 
 ---

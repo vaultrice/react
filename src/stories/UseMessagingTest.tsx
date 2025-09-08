@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { useMessaging } from '..'
-import { JoinedConnection } from '@vaultrice/sdk'
 
 export interface UseMessagingTestProps {
   // /** Is this the principal call tTo action on the page? */
@@ -36,7 +35,7 @@ export const UseMessagingTest = ({}: UseMessagingTestProps) => {
     <>
       <div>
         <h5>current connected:</h5>
-        <div>{connected.map((u: JoinedConnection) => (<p key={u.connectionId}>{u.data?.name as string}</p>))}</div>
+        <div>{connected.map((u) => (<p key={u.connectionId}>{u.data?.name as string}</p>))}</div>
       </div>
       <div>
         <h5>message:</h5>
@@ -62,7 +61,7 @@ export const UseMessagingTest = ({}: UseMessagingTestProps) => {
         <button
           type='button'
           className='storybook-button'
-          onClick={() => { leave({ name: inputValue }) }}
+          onClick={() => { leave() }}
         >
           leave
         </button>

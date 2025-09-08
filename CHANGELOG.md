@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.1](https://github.com/vaultrice/react/compare/v1.0.0...v1.0.1) - 2025-09-08
+
+- Enhanced `useMessaging` hook with flexible calling patterns:
+  - `useMessaging(id, onMessage, options)` - with message callback
+  - `useMessaging(id, options)` - without message callback
+- Added `connectionId` to `useMessaging` return tuple for identifying current user's connection
+- Smart connection deduplication in `useMessaging`:
+  - Always includes `connectionId` as base deduplication key
+  - When no `deduplicateBy` option is provided but connection has data, deduplicates by all data properties
+  - Custom deduplication via `deduplicateBy` option (single property or array of properties)
+- Current user's connection is always positioned first in the connected users array
+
 ## [1.0.0](https://github.com/vaultrice/react/compare/v0.9.8...v1.0.0) - 2025-09-06
 
 - First official stable release. This marks it as production-ready.

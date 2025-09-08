@@ -1,8 +1,42 @@
 import { useState, useEffect } from 'react'
 import type { JoinedConnections, JoinedConnection, LeavedConnection, JSONObj } from '@vaultrice/sdk'
-
 import { getNonLocalStorage } from './nlsInstances'
-import type { UseGeneralOptions } from './types'
+import type { UseMessagingOptions, UseMessagingReturn } from './types'
+
+/**
+ * Helper function to create a unique key for deduplication based on connection data
+ */
+const createDeduplicationKey = (connection: JoinedConnection, deduplicateBy?: string | string[]): string => {
+  // Always start with connectionId as base deduplication
+  let keyParts = [`connectionId:${connection.connectionId}`]
+
+  // If no data, only use connectionId
+  if (!connection.data) {
+    return keyParts.join('|')
+  }
+
+  // If no custom deduplication strategy is provided, use all properties in data
+  if (!deduplicateBy) {
+    const allProps = Object.keys(connection.data).sort() // sort for consistent key order
+    const dataParts = allProps.map(prop => {
+      const value = connection.data?.[prop]
+      return `${prop}:${JSON.stringify(value)}`
+    })
+    keyParts = keyParts.concat(dataParts)
+  } else {
+    // Use custom deduplication strategy in addition to connectionId
+    const props = Array.isArray(deduplicateBy) ? deduplicateBy : [deduplicateBy]
+
+    // Create additional key parts from specified properties
+    const dataParts = props.map(prop => {
+      const value = connection.data?.[prop]
+      return value !== undefined ? `${prop}:${JSON.stringify(value)}` : `${prop}:undefined`
+    })
+    keyParts = keyParts.concat(dataParts)
+  }
+
+  return keyParts.join('|')
+}
 
 /**
  * React hook for managing real-time messaging and presence using NonLocalStorage.
@@ -11,8 +45,8 @@ import type { UseGeneralOptions } from './types'
  * Automatically subscribes to presence and message events, and updates the connected users list.
  *
  * @param id - The unique identifier for the NonLocalStorage instance.
- * @param onMessage - Callback invoked when a message is received.
- * @param options - General options including credentials and instance options.
+ * @param onMessageOrOptions - Either a callback for messages or options object.
+ * @param options - General options (only when second param is onMessage).
  * @returns A tuple containing:
  * - connected: Array of currently connected users.
  * - send: Function to send a message.
@@ -20,17 +54,40 @@ import type { UseGeneralOptions } from './types'
  * - leave: Function to leave presence.
  * - error: Any error encountered during messaging or presence operations.
  */
-export const useMessaging = (
+export function useMessaging (
+  // eslint-disable-next-line no-unused-vars
   id: string,
   // eslint-disable-next-line no-unused-vars
-  onMessage: (msg: JSONObj) => void,
-  options: UseGeneralOptions
-) => {
-  const [connected, setConnected] = useState<JoinedConnections>([])
-  const [error, setError] = useState<any>()
-  const nls = getNonLocalStorage({ ...options?.instanceOptions, id }, options?.credentials)
+  onMessageOrOptions: ((msg: JSONObj) => void) | UseMessagingOptions | undefined,
+  // eslint-disable-next-line no-unused-vars
+  options?: UseMessagingOptions
+): UseMessagingReturn
+// eslint-disable-next-line no-redeclare
+export function useMessaging (
+  // eslint-disable-next-line no-unused-vars
+  id: string,
+  // eslint-disable-next-line no-unused-vars
+  options: UseMessagingOptions
+): UseMessagingReturn
+// eslint-disable-next-line no-redeclare
+export function useMessaging (
+  id: string,
+  // eslint-disable-next-line no-unused-vars
+  onMessageOrOptions: ((msg: JSONObj) => void) | UseMessagingOptions | undefined,
+  options?: UseMessagingOptions
+): UseMessagingReturn {
+  // Determine if second parameter is onMessage callback or options
+  const isOnMessageCallback = typeof onMessageOrOptions === 'function' || onMessageOrOptions === undefined
+  // eslint-disable-next-line no-unused-vars
+  const onMessage = isOnMessageCallback && typeof onMessageOrOptions === 'function' ? onMessageOrOptions as (msg: JSONObj) => void : undefined
+  const finalOptions = isOnMessageCallback ? options! : onMessageOrOptions as UseMessagingOptions
 
-  // load initial connections
+  const [connected, setConnected] = useState<JoinedConnections>([])
+  const [connectionId, setConnectionId] = useState<string | undefined>()
+  const [error, setError] = useState<any>()
+  const nls = getNonLocalStorage({ ...finalOptions?.instanceOptions, id }, finalOptions?.credentials)
+
+  // load initial connections and connection ID
   useEffect(() => {
     if (!nls) return
 
@@ -45,39 +102,74 @@ export const useMessaging = (
     }
 
     getConnections()
-  // re-run if nls instance changes
+    // re-run if nls instance changes
   }, [nls])
 
   // bind to get item changes
   useEffect(() => {
     if (!nls) return
 
-    // use functional updates to avoid stale closures and duplicate entries
     const joinAction = (joined: JoinedConnection) => {
       setConnected(prev => {
-        // overwrite any existing connection with the same connectionId
-        const others = (prev ?? []).filter(c => c.connectionId !== joined.connectionId)
-        return [joined, ...others]
+        const deduplicationKey = createDeduplicationKey(joined, finalOptions?.deduplicateBy)
+
+        // Remove any existing connections with the same deduplication key
+        const others = (prev ?? []).filter(c => {
+          const existingKey = createDeduplicationKey(c, finalOptions?.deduplicateBy)
+          return existingKey !== deduplicationKey
+        })
+
+        // Check if this is the current user's connection and put it first
+        const isMyConnection = joined.connectionId === nls.connectionId
+        return isMyConnection ? [joined, ...others] : [...others, joined]
       })
     }
 
     const leaveAction = (left: LeavedConnection) => {
-      setConnected(prev => (prev ?? []).filter(c => c.connectionId !== left.connectionId))
+      setConnected(prev => {
+        // For leave actions, we need to handle deduplication differently
+        // Remove all connections that match the leaving connection's deduplication key
+        if (finalOptions?.deduplicateBy || (left.data && Object.keys(left.data).length > 0)) {
+          // Create a temporary JoinedConnection-like object for deduplication key generation
+          const tempConnection: JoinedConnection = {
+            connectionId: left.connectionId,
+            data: left.data,
+            joinedAt: 0 // Not used for deduplication
+          }
+          const leftDeduplicationKey = createDeduplicationKey(tempConnection, finalOptions?.deduplicateBy)
+
+          return (prev ?? []).filter(c => {
+            const existingKey = createDeduplicationKey(c, finalOptions?.deduplicateBy)
+            return existingKey !== leftDeduplicationKey
+          })
+        } else {
+          // Fallback to connectionId-based removal
+          return (prev ?? []).filter(c => c.connectionId !== left.connectionId)
+        }
+      })
     }
 
-    nls.on('message', onMessage)
+    const onConnect = () => {
+      setConnectionId(nls.connectionId)
+    }
+
+    nls.on('connect', onConnect) // needs to be subscribed before the others
+    if (onMessage) nls.on('message', onMessage)
     nls.on('presence:join', joinAction)
     nls.on('presence:leave', leaveAction)
+
+    if (nls.connectionId) setConnectionId(nls.connectionId)
 
     // unbind
     return () => {
       if (!nls) return
-      nls.off('message', onMessage)
+      if (onMessage) nls.off('message', onMessage)
       nls.off('presence:join', joinAction)
       nls.off('presence:leave', leaveAction)
+      nls.off('connect', onConnect)
     }
-  // depend on nls and onMessage (handlers are stable/functional)
-  }, [nls, onMessage])
+    // depend on nls, onMessage, and deduplication strategy
+  }, [nls, onMessage, finalOptions?.deduplicateBy])
 
   return [
     connected,
@@ -88,7 +180,7 @@ export const useMessaging = (
     (msg: any) => {
       try {
         nls?.send(msg)
-        onMessage(msg)
+        if (onMessage) onMessage(msg)
       } catch (err) {
         setError(err)
       }
@@ -114,6 +206,10 @@ export const useMessaging = (
         setError(err)
       }
     },
+    /**
+     * Current connection ID.
+     */
+    connectionId,
     /**
      * Error state for messaging and presence operations.
      */

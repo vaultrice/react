@@ -1,5 +1,5 @@
 import React from 'react'
-import type { InstanceOptions, Credentials, ItemsType, ItemType, NonLocalStorage } from '@vaultrice/sdk'
+import type { InstanceOptions, Credentials, ItemsType, ItemType, NonLocalStorage, JoinedConnections, JSONObj } from '@vaultrice/sdk'
 
 /**
  * General options for NonLocalStorage hooks.
@@ -60,4 +60,33 @@ export type UseNonLocalStorageArrayReturn = [
   React.Dispatch<React.SetStateAction<any>>,
   /** isLoading */
   boolean
+]
+
+export type UseMessagingOptions = {
+  /**
+   * Custom deduplication strategy for presence connections.
+   * If not provided, defaults to connectionId deduplication.
+   * Can be a string (single property) or array of strings (multiple properties).
+   */
+  deduplicateBy?: string | string[]
+} & UseGeneralOptions
+
+/**
+ * Return type for useMessaging hook
+ */
+export type UseMessagingReturn = [
+  /** Array of currently connected users */
+  JoinedConnections,
+  /** Function to send a message */
+  // eslint-disable-next-line no-unused-vars
+  (msg: JSONObj) => void,
+  /** Function to join presence with a user object */
+  // eslint-disable-next-line no-unused-vars
+  (user: any) => void,
+  /** Function to leave presence */
+  () => void,
+  /** Current connection ID */
+  string | undefined,
+  /** Error state for messaging and presence operations */
+  any
 ]
