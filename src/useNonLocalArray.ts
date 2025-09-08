@@ -1,6 +1,6 @@
 import type { ValueType } from '@vaultrice/sdk'
 import { useNonLocalStorage } from './useNonLocalStorage'
-import type { UseNonLocalStorageOptions } from './types'
+import type { UseNonLocalStorageOptions, UseNonLocalArrayReturn } from './types'
 
 /**
  * React hook for managing an array in NonLocalStorage with atomic operations.
@@ -36,7 +36,7 @@ export const useNonLocalArray = <T extends ValueType>(
   id: string,
   key: string,
   options: UseNonLocalStorageOptions
-) => {
+): UseNonLocalArrayReturn<T> => {
   const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage(id, key, options)
 
   const push = async (element: T, opts?: { ttl?: number, updatedAt?: number }) => {

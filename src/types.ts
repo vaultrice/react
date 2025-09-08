@@ -1,5 +1,5 @@
 import React from 'react'
-import type { InstanceOptions, Credentials, ItemsType, ItemType, NonLocalStorage, JoinedConnections, JSONObj } from '@vaultrice/sdk'
+import type { InstanceOptions, Credentials, ItemsType, ItemType, NonLocalStorage, JoinedConnections, JSONObj, ValueType } from '@vaultrice/sdk'
 
 /**
  * General options for NonLocalStorage hooks.
@@ -89,4 +89,119 @@ export type UseMessagingReturn = [
   string | undefined,
   /** Error state for messaging and presence operations */
   any
+]
+
+/**
+ * Return type for useNonLocalState hook.
+ * @template VT - Value type
+ */
+export type UseNonLocalStateReturn<VT extends ValueType> = [
+  /** The current value for the specified key */
+  VT,
+  /** Function to set the value for the key */
+  // eslint-disable-next-line no-unused-vars
+  (val: VT, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => Promise<void>,
+  /** Error state */
+  any,
+  /** Loading state */
+  boolean
+]
+
+/**
+ * Return type for useNonLocalGeneralState hook.
+ * @template VT - Value type
+ */
+export type UseNonLocalGeneralStateReturn<VT extends ValueType> = [
+  /** The current value for the specified key */
+  VT,
+  /** Actions object with various atomic operations */
+  {
+    /** Function to set the value for the key */
+    // eslint-disable-next-line no-unused-vars
+    setItem: (val: VT, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => Promise<void>,
+    /** Function to append an element to an array */
+    // eslint-disable-next-line no-unused-vars
+    push: (element: ValueType, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to perform a shallow merge into an object */
+    // eslint-disable-next-line no-unused-vars
+    merge: (objectToMerge: Record<string, ValueType>, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to set a nested value using dot notation */
+    // eslint-disable-next-line no-unused-vars
+    setIn: (path: string, val: ValueType, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to splice an array */
+    // eslint-disable-next-line no-unused-vars
+    splice: (startIndex: number, deleteCount: number, items?: ValueType[], opts?: { ttl?: number, updatedAt?: number }) => Promise<void>
+  },
+  /** Error state */
+  any,
+  /** Loading state */
+  boolean
+]
+
+/**
+ * Return type for useNonLocalCounter hook.
+ */
+export type UseNonLocalCounterReturn = [
+  /** The current counter value */
+  number | undefined,
+  /** Function to increment the counter */
+  // eslint-disable-next-line no-unused-vars
+  (val?: number, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+  /** Function to decrement the counter */
+  // eslint-disable-next-line no-unused-vars
+  (val?: number, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+  /** Error state */
+  any,
+  /** Loading state */
+  boolean
+]
+
+/**
+ * Return type for useNonLocalObject hook.
+ * @template T - The shape of the stored object
+ */
+export type UseNonLocalObjectReturn<T extends Record<string, ValueType> = Record<string, ValueType>> = [
+  /** The current object value */
+  T,
+  /** Actions object with object-specific operations */
+  {
+    /** Function to perform a shallow merge into the object */
+    // eslint-disable-next-line no-unused-vars
+    merge: (objectToMerge: Partial<T>, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to set a nested value using dot notation */
+    // eslint-disable-next-line no-unused-vars
+    setIn: (path: string, val: ValueType, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to replace the whole object */
+    // eslint-disable-next-line no-unused-vars
+    setObject: (obj: T, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => Promise<void>
+  },
+  /** Error state */
+  any,
+  /** Loading state */
+  boolean
+]
+
+/**
+ * Return type for useNonLocalArray hook.
+ * @template T - The element type stored in the array
+ */
+export type UseNonLocalArrayReturn<T extends ValueType> = [
+  /** The current array value */
+  T[],
+  /** Actions object with array-specific operations */
+  {
+    /** Function to append an element to the array */
+    // eslint-disable-next-line no-unused-vars
+    push: (element: T, opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to splice the array */
+    // eslint-disable-next-line no-unused-vars
+    splice: (startIndex: number, deleteCount: number, items?: T[], opts?: { ttl?: number, updatedAt?: number }) => Promise<void>,
+    /** Function to replace the whole array */
+    // eslint-disable-next-line no-unused-vars
+    setArray: (arr: T[], opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => Promise<void>
+  },
+  /** Error state */
+  any,
+  /** Loading state */
+  boolean
 ]

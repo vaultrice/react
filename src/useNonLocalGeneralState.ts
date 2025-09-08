@@ -1,6 +1,6 @@
 import type { ValueType } from '@vaultrice/sdk'
 import { useNonLocalStorage } from './useNonLocalStorage'
-import type { UseNonLocalStorageOptions } from './types'
+import type { UseNonLocalStorageOptions, UseNonLocalGeneralStateReturn } from './types'
 
 /**
  * React hook for managing a single value in NonLocalStorage.
@@ -22,7 +22,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
   id: string,
   key: string,
   options: UseNonLocalStorageOptions
-) {
+): UseNonLocalGeneralStateReturn<VT> {
   const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage<VT>(id, key, options)
 
   const actions = {
@@ -31,7 +31,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param val - The value to store.
      * @param opts - Additional options for storing the value (optional).
      */
-    setItem: async (val: ValueType, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => {
+    setItem: async (val: VT, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => {
       try {
         const meta = await nls.setItem(key, val, opts)
         setValue(meta)
@@ -45,7 +45,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param element - The element to append.
      * @param opts - Additional options (optional).
      */
-    push: async (element: any, opts?: { ttl?: number, updatedAt?: number }) => {
+    push: async (element: ValueType, opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.push(key, element, opts)
         setValue(meta)
@@ -59,7 +59,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param objectToMerge - The object to merge.
      * @param opts - Additional options (optional).
      */
-    merge: async (objectToMerge: Record<string, any>, opts?: { ttl?: number, updatedAt?: number }) => {
+    merge: async (objectToMerge: Record<string, ValueType>, opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.merge(key, objectToMerge, opts)
         setValue(meta)
@@ -74,7 +74,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param val - The value to set.
      * @param opts - Additional options (optional).
      */
-    setIn: async (path: string, val: any, opts?: { ttl?: number, updatedAt?: number }) => {
+    setIn: async (path: string, val: ValueType, opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.setIn(key, path, val, opts)
         setValue(meta)
@@ -90,7 +90,7 @@ export function useNonLocalGeneralState<VT extends ValueType> (
      * @param items - Optional array of items to insert.
      * @param opts - Additional options (optional).
      */
-    splice: async (startIndex: number, deleteCount: number, items?: any[], opts?: { ttl?: number, updatedAt?: number }) => {
+    splice: async (startIndex: number, deleteCount: number, items?: ValueType[], opts?: { ttl?: number, updatedAt?: number }) => {
       try {
         const meta = await nls.splice(key, startIndex, deleteCount, items, opts)
         setValue(meta)

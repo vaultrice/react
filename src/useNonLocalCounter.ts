@@ -1,5 +1,5 @@
 import { useNonLocalStorage } from './useNonLocalStorage'
-import type { UseNonLocalStorageOptions } from './types'
+import type { UseNonLocalStorageOptions, UseNonLocalCounterReturn } from './types'
 
 /**
  * React hook for managing a numeric counter in NonLocalStorage.
@@ -20,7 +20,7 @@ export const useNonLocalCounter = (
   id: string,
   key: string,
   options: UseNonLocalStorageOptions
-) => {
+): UseNonLocalCounterReturn => {
   const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage(id, key, options)
 
   /**
@@ -67,5 +67,5 @@ export const useNonLocalCounter = (
     }
   }
 
-  return [value?.value, increment, decrement, error, isLoading]
+  return [value?.value as number, increment, decrement, error, isLoading]
 }

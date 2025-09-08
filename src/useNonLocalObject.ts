@@ -1,6 +1,6 @@
 import type { ValueType } from '@vaultrice/sdk'
 import { useNonLocalStorage } from './useNonLocalStorage'
-import type { UseNonLocalStorageOptions } from './types'
+import type { UseNonLocalStorageOptions, UseNonLocalObjectReturn } from './types'
 
 /**
  * React hook for managing an object stored in NonLocalStorage with atomic helpers.
@@ -41,7 +41,7 @@ export const useNonLocalObject = <T extends Record<string, ValueType> = Record<s
   id: string,
   key: string,
   options: UseNonLocalStorageOptions
-) => {
+): UseNonLocalObjectReturn<T> => {
   const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage(id, key, options)
 
   const merge = async (objectToMerge: Partial<T>, opts?: { ttl?: number, updatedAt?: number }) => {
@@ -53,7 +53,7 @@ export const useNonLocalObject = <T extends Record<string, ValueType> = Record<s
     }
   }
 
-  const setIn = async (path: string, val: any, opts?: { ttl?: number, updatedAt?: number }) => {
+  const setIn = async (path: string, val: ValueType, opts?: { ttl?: number, updatedAt?: number }) => {
     try {
       const meta = await nls.setIn(key, path, val, opts)
       setValue(meta)

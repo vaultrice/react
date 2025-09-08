@@ -1,6 +1,6 @@
 import type { ValueType } from '@vaultrice/sdk'
 import { useNonLocalStorage } from './useNonLocalStorage'
-import type { UseNonLocalStorageOptions } from './types'
+import type { UseNonLocalStorageOptions, UseNonLocalStateReturn } from './types'
 
 /**
  * React hook for managing a single value in NonLocalStorage.
@@ -21,7 +21,7 @@ export function useNonLocalState<VT extends ValueType> (
   id: string,
   key: string,
   options: UseNonLocalStorageOptions
-) {
+): UseNonLocalStateReturn<VT> {
   const [nls, value, setValue,, error, setError, isLoading] = useNonLocalStorage<VT>(id, key, options)
 
   /**
@@ -29,7 +29,7 @@ export function useNonLocalState<VT extends ValueType> (
    * @param val - The value to store.
    * @param opts - Additional options for storing the value (optional).
    */
-  const setItem = async (val: ValueType, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => {
+  const setItem = async (val: VT, opts?: { ttl?: number, ifAbsent?: boolean, updatedAt?: number }) => {
     try {
       const meta = await nls.setItem(key, val, opts)
       setValue(meta)
